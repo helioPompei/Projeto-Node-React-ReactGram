@@ -1,4 +1,0 @@
-// Dependencias 
-npm i bcrypt cors dotenv express express-validator jsonwebtoken mongoose multer
-// Dev Dependencias 
-npm i -D nodemon
