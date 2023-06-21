@@ -1,16 +1,26 @@
 import express from "express";
 const userRoutes = express.Router();
-import { getCurrentUser, login, register } from "../controllers/userController";
+import { getCurrentUser, login, register, update } from "../controllers/userController";
 import { handleValidation } from "../validators/handleValidations";
 import {
-  userLoginValidator,
-  userRegisterValidator,
+  userLoginValidation,
+  userRegisterValidation,
+  userUpdateValidation,
 } from "../validators/userValidations";
 import { authGuard } from "../middlewares/authGuard";
+import { imageUpload } from "../middlewares/imageUpload";
 
 userRoutes
-  .post("/register", userRegisterValidator, handleValidation, register)
-  .post("/login", userLoginValidator, handleValidation, login)
-  .get("/profile", authGuard, getCurrentUser);
+  .post("/register", userRegisterValidation, handleValidation, register)
+  .post("/login", userLoginValidation, handleValidation, login)
+  .get("/profile", authGuard, getCurrentUser)
+  .put(
+    "/",
+    authGuard,
+    userUpdateValidation,
+    handleValidation,
+    imageUpload.single("profileImage"),
+    update
+  );
 
 export default userRoutes;

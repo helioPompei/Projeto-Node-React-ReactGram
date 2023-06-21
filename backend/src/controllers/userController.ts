@@ -61,7 +61,7 @@ export const login = async (req: Request, res: Response) => {
 
   // Check if password matches
   if (!(await bcrypt.compare(password, user.password!))) {
-    res.send(422).json({ erros: ["Senha inválida."] });
+    res.status(422).json({ erros: ["Senha inválida."] });
   }
 
   // Return token
@@ -77,4 +77,40 @@ export const getCurrentUser = async (req: any, res: Response) => {
   const user = req.user;
 
   res.status(200).json(user);
+};
+
+// Update an user
+export const update = async (req: any, res: Response) => {
+  const { name, password, bio } = req.body;
+
+  let profileImage = null;
+
+  if (req.file) {
+    profileImage = req.file.filename;
+  }
+
+  if (name) {
+    req.user.name = name;
+  }
+
+  if (password) {
+    // Generate password hashed
+    const salt = await bcrypt.genSalt();
+    const passwordHashed = await bcrypt.hash(password, salt);
+
+    req.user.password = passwordHashed;
+  }
+  if (profileImage) {
+    req.user.profileImage = profileImage;
+  }
+  if (bio) {
+    req.user.bio = bio;
+  }
+
+  try {
+    await req.user.save();
+    res.status(200).json(req.user);
+  } catch (err) {
+    res.status(500).json({ erros: ["Erro ao salvar o usuario."] });
+  }
 };
