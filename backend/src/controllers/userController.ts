@@ -114,3 +114,24 @@ export const update = async (req: any, res: Response) => {
     res.status(500).json({ erros: ["Erro ao salvar o usuario."] });
   }
 };
+
+// Encontrar usuarios pelo id
+export const getUserById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(new mongoose.Types.ObjectId(id)).select(
+      "-password"
+    );
+
+    if (!user) {
+      res.status(404).json({ errors: ["Usuário não encontrado."] });
+      return;
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(404).json({ errors: ["Usuário não encontrado."] });
+    return;
+  }
+};

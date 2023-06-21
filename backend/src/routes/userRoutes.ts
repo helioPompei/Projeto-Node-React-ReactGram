@@ -1,6 +1,12 @@
 import express from "express";
 const userRoutes = express.Router();
-import { getCurrentUser, login, register, update } from "../controllers/userController";
+import {
+  getCurrentUser,
+  getUserById,
+  login,
+  register,
+  update,
+} from "../controllers/userController";
 import { handleValidation } from "../validators/handleValidations";
 import {
   userLoginValidation,
@@ -21,6 +27,7 @@ userRoutes
     handleValidation,
     imageUpload.single("profileImage"),
     update
-  );
+  )
+  .get("/:id", getUserById);
 
 export default userRoutes;
