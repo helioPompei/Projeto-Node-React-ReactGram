@@ -6,17 +6,17 @@ export const handleValidation = (
   res: Response,
   next: NextFunction
 ) => {
-  const erros = validationResult(req);
+  const errors = validationResult(req);
 
-  if (erros.isEmpty()) {
+  if (errors.isEmpty()) {
     return next();
   }
 
   const extractedErrors: String[] = [];
 
-  erros.array().map((err) => {
+  errors.array().map((err) => {
     extractedErrors.push(err.msg);
   });
 
-  return res.status(422).json({ erros: extractedErrors });
+  return res.status(422).json({ errors: extractedErrors });
 };
