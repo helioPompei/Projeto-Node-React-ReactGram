@@ -6,16 +6,16 @@ const imageStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     let folder = "";
 
-    if (req.baseUrl.includes("users")) {
+    if (req.baseUrl.includes("user")) {
       folder = "users";
-    } else if (req.baseUrl.includes("photos")) {
+    } else if (req.baseUrl.includes("photo")) {
       folder = "photos";
     }
 
     cb(null, `src/uploads/${folder}/`);
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Best with UUID
+    cb(null, Date.now() + path.extname(file.originalname)); // Better with UUID
   },
 });
 

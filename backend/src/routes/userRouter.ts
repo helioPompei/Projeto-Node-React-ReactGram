@@ -1,5 +1,5 @@
 import express from "express";
-const userRoutes = express.Router();
+const userRouter = express.Router();
 import {
   getCurrentUser,
   getUserById,
@@ -16,7 +16,7 @@ import {
 import { authGuard } from "../middlewares/authGuard";
 import { imageUpload } from "../middlewares/imageUpload";
 
-userRoutes
+userRouter
   .post("/register", userRegisterValidation, handleValidation, register)
   .post("/login", userLoginValidation, handleValidation, login)
   .get("/profile", authGuard, getCurrentUser)
@@ -30,4 +30,4 @@ userRoutes
   )
   .get("/:id", getUserById);
 
-export default userRoutes;
+export { userRouter };
