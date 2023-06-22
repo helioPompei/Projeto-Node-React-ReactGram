@@ -17,3 +17,20 @@ export const photoInsertValidation = [
     return true;
   }),
 ];
+
+export const photoUpdateValidation = [
+  body("title")
+    .optional()
+    .isString()
+    .withMessage("o título precisa ser uma String")
+    .isLength({ min: 3 })
+    .withMessage("O título precisa ter no mínimo 3 caracteres"),
+];
+
+export const CommentValidation = [
+  body("comment")
+    .notEmpty()
+    .withMessage("Comment não pode estar vazio!")
+    .isString()
+    .withMessage("o comentario precisa ser uma String"),
+];

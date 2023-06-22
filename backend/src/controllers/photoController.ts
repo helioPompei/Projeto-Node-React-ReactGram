@@ -28,25 +28,189 @@ export const insertPhoto = async (req: any, res: Response) => {
 export const deletePhoto = async (req: any, res: Response) => {
   const { id } = req.params;
 
-  const photo = await Photo.findById(new mongoose.Types.ObjectId(id));
+  try {
+    const photo = await Photo.findById(new mongoose.Types.ObjectId(id));
 
-  // Check if photo exists
-  if (!photo) {
-    res.status(404).json({ erros: ["Foto não encontrada!"] });
-    return;
-  }
+    if (!photo) {
+      res.status(404).json({ erros: ["Foto não encontrada!"] });
+      return;
+    }
 
-  // Check if photo belongs to user
-  if (!photo.userId || photo.userId.toString() !== req.user._id.toString()) {
+    // Check if photo belongs to user
+    if (!photo.userId || photo.userId.toString() !== req.user._id.toString()) {
+      res
+        .status(422)
+        .json({ errors: ["Houve um problema, por favor tente novamente."] });
+      return;
+    }
+
+    await Photo.findByIdAndDelete(photo._id);
+    res
+      .status(200)
+      .json({ id: photo._id, message: "Foto deletada com sucesso." });
+  } catch (err) {
     res
       .status(422)
-      .json({ errors: ["Houve um proble, por favor tente novamente."] });
+      .json({ errors: ["Houve um problema, por favor tente novamente."] });
     return;
   }
+};
 
-  await Photo.findByIdAndDelete(photo._id);
-  // Send a success response if deletion is successful
-  res
-    .status(200)
-    .json({ id: photo._id, message: "Foto deletada com sucesso!" });
+// Get all photos
+export const getAllPhotos = async (req: Request, res: Response) => {
+  const allPhotos = await Photo.find({})
+    .sort([["createdAt", -1]])
+    .exec();
+
+  res.status(200).json(allPhotos);
+};
+
+export const getUserPhotos = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const allUserPhotos = await Photo.find({ userId: id })
+    .sort([["createdAt", -1]])
+    .exec();
+
+  res.status(200).json(allUserPhotos);
+};
+
+// Get photo by id
+export const getPhotoById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const photo = await Photo.findById(new mongoose.Types.ObjectId(id));
+    // Check if photo exists
+    if (!photo) {
+      res
+        .status(404)
+        .json({ errors: ["Foto não encontrada em nossa base de dados!"] });
+    }
+
+    res.status(200).json(photo);
+  } catch (err) {
+    res
+      .status(422)
+      .json({ errors: ["Houve um problema, por favor tente novamente."] });
+  }
+};
+
+// Update a photo
+export const updatePhoto = async (req: any, res: Response) => {
+  const { id } = req.params;
+  const { title } = req.body;
+
+  try {
+    const photo = await Photo.findById(new mongoose.Types.ObjectId(id));
+    // Check if photo exists
+    if (!photo) {
+      res
+        .status(404)
+        .json({ errors: ["Foto não encontrada em nossa base de dados!"] });
+      return;
+    }
+
+    // Check if photo belongs to user
+    if (!photo.userId || photo.userId.toString() !== req.user._id.toString()) {
+      res
+        .status(422)
+        .json({ errors: ["Houve um problema, por favor tente novamente. 1"] });
+      return;
+    }
+
+    if (title) {
+      photo.title = title;
+    }
+    await photo.save();
+
+    res.status(200).json({ photo, message: "Foto atualizada com sucesso!" });
+  } catch (err) {
+    res
+      .status(422)
+      .json({ errors: ["Houve um problema, por favor tente novamente."] });
+  }
+};
+
+// Like photo
+export const likePhoto = async (req: any, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const photo = await Photo.findById(new mongoose.Types.ObjectId(id));
+    // Check if photo exists
+    if (!photo) {
+      res
+        .status(404)
+        .json({ errors: ["Foto não encontrada em nossa base de dados!"] });
+      return;
+    }
+
+    // Check if user already liked the photo
+    if (photo.likes.includes(req.user._id)) {
+      res.status(422).json({ erros: ["Você já curtiu a foto."] });
+      return;
+    }
+
+    // Put user id in likes array
+    photo.likes.push(req.user._id);
+
+    photo.save();
+
+    res.status(200).json({
+      photoId: id,
+      userId: req.user._id,
+      message: "A foto foi curtida!",
+    });
+  } catch (err) {
+    res
+      .status(422)
+      .json({ errors: ["Houve um problema, por favor tente novamente."] });
+  }
+};
+
+// Comment photo
+export const commentPhoto = async (req: any, res: Response) => {
+  const { id } = req.params;
+  const { comment } = req.body;
+
+  try {
+    const photo = await Photo.findById(new mongoose.Types.ObjectId(id));
+    // Check if photo exists
+    if (!photo) {
+      res
+        .status(404)
+        .json({ errors: ["Foto não encontrada em nossa base de dados!"] });
+      return;
+    }
+
+    const userComment = {
+      comment,
+      userName: req.user.name,
+      userImage: req.user.profileImage,
+      userId: req.user._id,
+    };
+
+    photo.comments.push(userComment);
+
+    await photo.save();
+
+    res.status(200).json({
+      comment: userComment,
+      message: "O comentario foi adicionado com sucesso",
+    });
+  } catch (err) {
+    res
+      .status(422)
+      .json({ errors: ["Houve um problema, por favor tente novamente."] });
+  }
+};
+
+// Search photos by title
+export const searchPhotos = async (req: any, res: Response) => {
+  const { q } = req.query;
+
+  const photos = await Photo.find({ title: new RegExp(q, "i") }).exec();
+
+  res.status(200).json(photos);
 };
