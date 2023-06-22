@@ -1,9 +1,10 @@
 // BACKEND 
  - npm init -y
- - npm i typescript -D
  - npx tsc --init
- - npm i tsx -D ( Para rodar o app - melhor performance )
- - npm i tsup -D
+ - npm i -D ts-node-dev 
+ - npm i -D typescript 
+ - npm i -D @types/node
+ - npm i -D @types/express
 
  - npm i express
  - npm i bcrypt 
@@ -20,8 +21,5 @@
 // SCRIPTS DEV E BUILD  
 
  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx src/app.ts",
-    "dev:watch": "tsx watch src/app.ts",
-    "build": "tsup src"
+    "dev": "ts-node-dev --respawn --transpile-only src/app.ts"
   }
