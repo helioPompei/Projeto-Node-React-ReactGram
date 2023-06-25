@@ -16,7 +16,9 @@
  - npm i multer
 
 // FRONTEND 
-
+ - npm i react-icons 
+ - npm i react-router-dom
+ - 
 
 // SCRIPTS DEV E BUILD  
 
