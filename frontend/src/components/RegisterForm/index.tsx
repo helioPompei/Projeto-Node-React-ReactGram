@@ -3,6 +3,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
+// Hooks
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+// Redux
+import { register as registerUser, reset } from "../../redux/slices/authSlice";
+
 const registerUserFormSchema = z.object({
   name: z
     .string()
@@ -28,6 +35,9 @@ const registerUserFormSchema = z.object({
 type RegisterUserFormData = z.infer<typeof registerUserFormSchema>;
 
 export const RegisterForm = () => {
+  const dispatch = useDispatch();
+  const { loadding, error } = useSelector((store) => store.auth);
+
   const {
     register,
     handleSubmit,
@@ -36,9 +46,13 @@ export const RegisterForm = () => {
     resolver: zodResolver(registerUserFormSchema),
   });
 
-  const handleRegisterSubmit = (data: any) => {
-    console.log(data);
+  const handleRegisterSubmit = async (data: any) => {
+    dispatch(registerUser(data));
   };
+
+  useEffect(() => {
+    dispatch(reset());
+  }, [dispatch]);
 
   return (
     <S.RegisterFormContainer>
@@ -98,6 +112,9 @@ export const RegisterForm = () => {
           <S.ErrorsContainer>{errors.confirm.message}</S.ErrorsContainer>
         )}
       </form>
+
+      {loadding ? <h1>LOADING TRUE</h1> : <h1>LOADING FALSE</h1>}
+      {error && <h1>{error}</h1>}
     </S.RegisterFormContainer>
   );
 };

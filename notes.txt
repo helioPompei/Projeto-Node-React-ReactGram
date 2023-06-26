@@ -18,7 +18,10 @@
 // FRONTEND 
  - npm i react-icons 
  - npm i react-router-dom
- - 
+ - npm i zod
+ - npm i react-hook-form 
+ - npm i redux
+ - npm i @reduxjs/toolkit
 
 // SCRIPTS DEV E BUILD  
 
