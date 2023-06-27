@@ -32,7 +32,7 @@ export const deletePhoto = async (req: any, res: Response) => {
     const photo = await Photo.findById(new mongoose.Types.ObjectId(id));
 
     if (!photo) {
-      res.status(404).json({ erros: ["Foto não encontrada!"] });
+      res.status(404).json({ errors: ["Foto não encontrada!"] });
       return;
     }
 
@@ -148,7 +148,7 @@ export const likePhoto = async (req: any, res: Response) => {
 
     // Check if user already liked the photo
     if (photo.likes.includes(req.user._id)) {
-      res.status(422).json({ erros: ["Você já curtiu a foto."] });
+      res.status(422).json({ errors: ["Você já curtiu a foto."] });
       return;
     }
 

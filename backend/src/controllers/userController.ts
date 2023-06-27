@@ -37,7 +37,7 @@ export const register = async (req: Request, res: Response) => {
 
   // Check if user was created successfully, return the token
   if (!newUser) {
-    res.status(422).json({ erros: ["Erro interno ao criar usuario."] });
+    res.status(422).json({ errors: ["Erro interno ao criar usuario."] });
   }
 
   // Return token
@@ -61,7 +61,8 @@ export const login = async (req: Request, res: Response) => {
 
   // Check if password matches
   if (!(await bcrypt.compare(password, user.password!))) {
-    res.status(422).json({ erros: ["Senha inválida."] });
+    res.status(422).json({ errors: ["Senha inválida."] });
+    return;
   }
 
   // Return token
@@ -111,7 +112,7 @@ export const update = async (req: any, res: Response) => {
     await req.user.save();
     res.status(200).json(req.user);
   } catch (err) {
-    res.status(500).json({ erros: ["Erro ao salvar o usuario."] });
+    res.status(500).json({ errors: ["Erro ao salvar o usuario."] });
   }
 };
 

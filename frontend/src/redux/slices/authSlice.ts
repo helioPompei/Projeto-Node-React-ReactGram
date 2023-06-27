@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { authService } from "../../services/authService";
 
+// Codigo para buscar o usuario ( Token e id ) do local storage
 const user = localStorage.getItem("user");
 
 // Estado inicial do slice
@@ -24,6 +25,25 @@ export const register = createAsyncThunk(
     return response.data;
   }
 );
+
+// Register Thunk Function
+export const login = createAsyncThunk(
+  "auth/login",
+  async (user, action) => {
+    const response = await authService.loginUser(user);
+    // check for errors
+    console.log(response);
+    if (response.data.errors) {
+      return action.rejectWithValue(response.data.errors[0]);
+    }
+    return response.data;
+  }
+);
+
+// Logout Thunk Function
+export const logout = createAsyncThunk("auth/logout", async () => {
+  await authService.logoutUser();
+});
 
 export const authSlice = createSlice({
   name: "auth",
@@ -50,6 +70,25 @@ export const authSlice = createSlice({
       .addCase(register.rejected, (state, action) => {
         state.loadding = false;
         state.error = action.payload as any;
+        state.user = null;
+      })
+      .addCase(login.pending, (state) => {
+        state.loadding = true;
+        state.error = false;
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.loadding = false;
+        state.error = action.payload as any;
+        state.user = null;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.loadding = false;
+        state.success = true;
+        state.error = false;
+        state.user = action.payload as any;
+      })
+    
+      .addCase(logout.fulfilled, (state) => {
         state.user = null;
       });
   },
