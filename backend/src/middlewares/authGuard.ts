@@ -11,7 +11,11 @@ export const authGuard = async (
   res: Response,
   next: NextFunction
 ) => {
+  console.log(req.headers);
   const authHeader = req.headers["authorization"];
+
+  console.log(req.headers["authorization"]);
+  console.log(authHeader);
 
   // Split Bearer {TOKEN}
   const token: string | undefined = authHeader && authHeader.split(" ")[1];
@@ -22,6 +26,8 @@ export const authGuard = async (
   // Check if token is valid
   try {
     const verified = jwt.verify(token, jwtSecret!) as { id: string };
+
+    console.log(verified);
 
     req.user = await User.findById(verified.id).select("-password");
     next();

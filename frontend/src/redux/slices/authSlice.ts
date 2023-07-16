@@ -4,9 +4,23 @@ import { authService } from "../../services/authService";
 // Codigo para buscar o usuario ( Token e id ) do local storage
 const user = localStorage.getItem("user");
 
+// UserType
+interface IuserType {
+  _id: string;
+  token: string;
+}
+
+// InitialStateType
+interface IinitialState {
+  user: IuserType;
+  error: boolean;
+  success: boolean;
+  loadding: boolean;
+}
+
 // Estado inicial do slice
-const initialState = {
-  user: user ? JSON.parse(user) : null,
+const initialState: IinitialState = {
+  user: user ? JSON.parse(user).data : null,
   error: false,
   success: false,
   loadding: false,
@@ -15,12 +29,12 @@ const initialState = {
 // Register Thunk Function
 export const register = createAsyncThunk(
   "auth/register",
-  async (user, action) => {
+  async (user: any, thunkAPI) => {
+    // Request
     const response = await authService.registerUser(user);
     // check for errors
-    console.log(response);
     if (response.data.errors) {
-      return action.rejectWithValue(response.data.errors[0]);
+      return thunkAPI.rejectWithValue(response.data.errors[0]);
     }
     return response.data;
   }
@@ -29,12 +43,12 @@ export const register = createAsyncThunk(
 // Register Thunk Function
 export const login = createAsyncThunk(
   "auth/login",
-  async (user, action) => {
+  async (user: any, thunkAPI) => {
     const response = await authService.loginUser(user);
     // check for errors
     console.log(response);
     if (response.data.errors) {
-      return action.rejectWithValue(response.data.errors[0]);
+      return thunkAPI.rejectWithValue(response.data.errors[0]);
     }
     return response.data;
   }
@@ -87,7 +101,7 @@ export const authSlice = createSlice({
         state.error = false;
         state.user = action.payload as any;
       })
-    
+
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
       });

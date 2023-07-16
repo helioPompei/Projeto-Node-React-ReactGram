@@ -1,24 +1,22 @@
-import axios from "axios";
-
-axios.defaults.baseURL = "http://localhost:5000/api/user";
+import { api } from "./api";
 
 //Função de registro de usuario
 export const registerUser = async (data: any) => {
   try {
-    const response = await axios.post("/register", data);
+    const response = await api.post("/user/register", data);
     if (response) {
       localStorage.setItem("user", JSON.stringify(response));
     }
-
     return response;
   } catch (err: any) {
     return err.response;
   }
 };
 
+//Função de Login de usuario
 const loginUser = async (data: any) => {
   try {
-    const response = await axios.post("/login", data);
+    const response = await api.post("/user/login", data);
     console.log(response);
 
     if (response) {
